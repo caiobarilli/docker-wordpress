@@ -1,0 +1,41 @@
+services:
+
+    # Web
+    web:
+        build:
+            context: ./.docker/
+            dockerfile: Dockerfile
+        ports:
+            - "443:443"
+        restart: always
+        volumes:
+            - ./wordpress:/var/www/html
+            - ./themes:/var/www/html/wp-content/themes
+        networks:
+            - wordpress
+
+    # MySQL
+    mysql:
+        image: mariadb:latest
+        restart: always
+        environment:
+            MARIADB_ROOT_PASSWORD: root
+            MARIADB_DATABASE: wordpress
+            MARIADB_USER: wordpress
+            MARIADB_PASSWORD: wordpress
+        ports:
+            - "3306:3306"
+        volumes:
+            - './.docker/db_data:/var/lib/mysql'
+        networks:
+            - wordpress
+
+networks:
+    wordpress:
+        driver: bridge
+
+volumes:
+    db_data:
+        driver: local
+    redis_data:
+        driver: local

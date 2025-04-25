@@ -1,0 +1,9 @@
+/themes
+
+/wptest
+
+/wordpress
+
+.docker/db_data/
+
+.docker/ssl/

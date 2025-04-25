@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+str=$1
+
+web_id=$(docker ps -qf "name=web-1")
+
+if command -v docker-compose &> /dev/null; then
+    echo "docker-compose ok"
+else
+    echo "docker-compose is not installed."
+fi
+
+# Bash do container
+if [ "$str" = "bash" ]; then
+    docker exec -it $web_id bash
+fi
+
+# Bash do container
+if [ "$str" = "install:wordpress" ]; then
+    docker exec -it $web_id bash -c "
+
+    wp core download --allow-root
+
+    wp config create \
+        --dbname=wordpress \
+        --dbuser=wordpress \
+        --dbpass=wordpress \
+        --dbhost=mysql \
+        --dbcharset=utf8 \
+        --dbcollate="" \
+        --skip-check \
+        --allow-root
+    "
+fi
+
+# SSL
+if [ "$str" = "ssl" ]; then
+    echo "Copiando certificados SSL .."
+
+    mkdir -p ./ssl
+
+    docker cp "$web_id:/etc/nginx/ssl/nginx.crt" ./ssl/nginx.crt
+
+    echo "Certificados SSL copiados com sucesso!"
+fi
+
+# Permissões do container
+if [ "$str" = "set:permissions" ]; then
+    docker exec -it $web_id bash -c "
+    # Adiciona um grupo chamado 'www-data' com ID de grupo (GID) 1000
+    addgroup -g 1000 www-data
+
+    # Adiciona um usuário com UID 1000 ao grupo 'www-data'
+    # -D: Define um usuário sem uma senha
+    # -u 1000: Define o UID do usuário como 1000
+    # -G www-data: Define o grupo principal do usuário como 'www-data'
+    # -s /sbin/nologin: Define o shell do usuário como /sbin/nologin para evitar login direto
+    adduser -D -u 1000 -G www-data -s /sbin/nologin www-data
+
+    # Adiciona o usuário 'nobody' ao grupo 'www-data'
+    chown -R nobody:www-data /var/www/html
+
+    # Adiciona o usuário '1000' ao grupo 'www-data'
+    chown -R 1000:www-data /var/www/html/wp-content/themes
+    "
+fi
+
+# Permissões do container
+if [ "$str" = "remove:permissions" ]; then
+    docker exec -it $web_id bash -c "
+    addgroup -g 1000 www-data
+
+    adduser -D -u 1000 -G www-data -s /sbin/nologin www-data
+
+    chown -R nobody:www-data /var/www/html
+    "
+fi
