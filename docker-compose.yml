@@ -30,6 +30,16 @@ services:
         networks:
             - wordpress
 
+    # MailHog
+    mailhog:
+        image: mailhog/mailhog
+        ports:
+            - "8025:8025"
+            - "1025:1025"
+        networks:
+            - wordpress
+        restart: always
+
 networks:
     wordpress:
         driver: bridge
