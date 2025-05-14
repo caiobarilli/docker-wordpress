@@ -4,7 +4,7 @@
 
 **PHP-FPM**: Process Manager para PHP, responsável por executar scripts PHP.
 
-**Composer**: Gerenciador de dependências para PHP, usado para instalar e gerenciar pacotes PHP, incluindo o Laravel.
+**Composer**: Gerenciador de dependências para PHP, usado para instalar e gerenciar pacotes PHP.
 
 **MySQL**: Banco de dados relacional MySQL para armazenar dados do aplicativo.
 
