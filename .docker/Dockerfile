@@ -106,7 +106,13 @@ RUN apk add --no-cache openssl && \
     -keyout /etc/nginx/ssl/nginx.key \
     -out /etc/nginx/ssl/nginx.crt \
     -subj "/C=BR/ST=SaoPaulo/L=SaoPaulo/O=Wordpress/CN=site.wordpress.test" \
-    -addext "subjectAltName = DNS:site.wordpress.test"
+    -addext "subjectAltName = DNS:site.wordpress.test" && \
+    \
+    # Copiando para o diretório de certificados confiáveis do sistema
+    cp /etc/nginx/ssl/nginx.crt /usr/local/share/ca-certificates/nginx.crt && \
+    \
+    # Atualizando a lista de certificados confiáveis
+    update-ca-certificates
 
 # Configure nginx
 COPY ./conf/nginx.conf /etc/nginx/
